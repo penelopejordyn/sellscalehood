@@ -1,9 +1,6 @@
 {
-    "name": "PostgreSQL Codespace",
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
       "ghcr.io/itsmechlark/features/postgresql:1": {}
     },
-    "forwardPorts": [5432]
     }
   
