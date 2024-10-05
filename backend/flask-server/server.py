@@ -8,7 +8,7 @@ from threading import Thread
 from yfinance import Ticker
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Allow all routes
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///sellscalehood'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -17,35 +17,30 @@ app.config['SQLALCHEMY_ECHO'] = True
 with app.app_context():
     connect_db(app)
     db.create_all()
-    
-
-
-
 
 @app.route("/stock_information", methods=["POST"])
 def stock_information():
+    """
+    Fetch stock information for a given symbol.
+    Expects JSON payload with 'symbol'.
+    """
     data = request.json
     symbol = data.get('symbol')
     info = yf.Ticker(symbol).info
-    
-    # Process the data (store in database, etc.)
     print(f"Received data: {info},")
-    
-    # Return a response
     return jsonify(info)
-
-
 
 @app.route("/track", methods=["POST"])
 def track():
-    # Handle incoming request
+    """
+    Track a new stock.
+    Expects JSON payload with 'symbol', 'shortName', and 'currentPrice'.
+    """
     data = request.get_json()
-    
     symbol = data.get('symbol')
-    shortName = data.get('shortName')  # Ensure frontend sends 'shortName'
+    shortName = data.get('shortName')
     currentPrice = data.get('currentPrice')
     
-    # Check if stock is already tracked to prevent duplicates
     existing_stock = Stocks.query.filter_by(symbol=symbol, tracking=True).first()
     if existing_stock:
         return jsonify({"message": "Stock is already being tracked"}), 400
@@ -60,9 +55,12 @@ def track():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-    
+
 @app.route("/tracked")
 def tracked():
+    """
+    Get all tracked stocks.
+    """
     tracked_stocks = Stocks.query.filter_by(tracking=True).all()
     return jsonify([{
         "symbol": stock.symbol,
@@ -70,17 +68,22 @@ def tracked():
         "currentPrice": stock.currentPrice
     } for stock in tracked_stocks])
 
-# Fixing the route by adding the missing '/' at the beginning
 @app.route("/is_tracked/<symbol>", methods=["GET"])
 def is_tracked(symbol):
+    """
+    Check if a stock is being tracked.
+    """
     stock = Stocks.query.filter_by(symbol=symbol, tracking=True).first()
     if stock:
         return jsonify({"tracked": True})
     return jsonify({"tracked": False})
-    
-# Use POST method for untrack since we are receiving data in the body
+
 @app.route("/untrack", methods=["POST"])
 def untrack():
+    """
+    Untrack a stock.
+    Expects JSON payload with 'symbol'.
+    """
     data = request.get_json()
     symbol = data.get('symbol')
     
@@ -96,33 +99,33 @@ def untrack():
             return jsonify({"error": str(e)}), 500
     else: 
         return jsonify({"error": "Stock not found"}), 404
-    
+
 @app.route("/buy", methods=["POST"])
 def buy_stock():
+    """
+    Buy shares of a stock.
+    Expects JSON payload with 'symbol', 'shortName', 'amount', and 'currentPrice'.
+    """
     data = request.get_json()
-
     print(f"Received buy request data: {data}")
 
     symbol = data.get('symbol')
     shortName = data.get('shortName')
     amount = data.get('amount')
     currentPrice = data.get('currentPrice')
-    tracking = data.get('tracking', False)  # Set tracking to False if not provided
+    tracking = data.get('tracking', False)
 
     if not symbol or not shortName or not amount or not currentPrice:
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
-        shares_to_add = round(amount / currentPrice,2)
-
-        # Retrieve stock record
+        shares_to_add = round(amount / currentPrice, 2)
         stock = Stocks.query.filter_by(symbol=symbol).first()
 
         if stock:
-            stock.shares = stock.shares or 0  # Initialize shares if None
+            stock.shares = stock.shares or 0
             stock.shares += shares_to_add
         else:
-            # Create new stock entry with tracking set to a default value if not provided
             new_stock = Stocks(symbol=symbol, shortName=shortName, currentPrice=currentPrice, tracking=tracking, owned=False, shares=shares_to_add)
             db.session.add(new_stock)
 
@@ -136,9 +139,12 @@ def buy_stock():
         db.session.rollback()
         return jsonify({"error": "Internal server error"}), 500
 
-
 @app.route("/sell", methods=["POST"])
 def sell():
+    """
+    Sell shares of a stock.
+    Expects JSON payload with 'symbol' and 'shares'.
+    """
     data = request.get_json()
     symbol = data.get('symbol')
     shares_to_sell = data.get('shares')
@@ -167,7 +173,10 @@ def sell():
 
 @app.route("/portfolio", methods=["GET"])
 def portfolio():
-    owned_stocks = Stocks.query.filter(Stocks.shares > 0).all()  # Fetch stocks with positive shares
+    """
+    Get the portfolio of owned stocks.
+    """
+    owned_stocks = Stocks.query.filter(Stocks.shares > 0).all()
     return jsonify([{
         "symbol": stock.symbol,
         "name": stock.shortName,
@@ -175,9 +184,12 @@ def portfolio():
         "currentPrice": stock.currentPrice,
         "shortName": stock.shortName,
     } for stock in owned_stocks])
-    
+
 @app.route("/trade_history", methods=["GET"])
 def trade_history():
+    """
+    Get the trade history.
+    """
     trades = TradeHistory.query.all()
     return jsonify([{
         "symbol": trade.symbol,
@@ -187,10 +199,6 @@ def trade_history():
         "action": trade.action,
         "timestamp": trade.timestamp
     } for trade in trades])
-    
-
-
-    
 
 if __name__ == "__main__":
     app.run(debug=True)

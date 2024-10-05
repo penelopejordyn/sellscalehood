@@ -1,0 +1,14 @@
+{
+    "name": "PostgreSQL Codespace",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+      "postgresql": "latest"
+    },
+    "postCreateCommand": "sudo service postgresql start",
+    "forwardPorts": [5432],
+    "remoteEnv": {
+      "POSTGRES_USER": "postgres",
+      "POSTGRES_PASSWORD": "your_password"
+    }
+  }
+  
