@@ -15,7 +15,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSelectedStock }) => {
   const [formData, setFormData] = useState<{ symbol: string }>({
     symbol: '',
   });
-
+  const [chartData, setChartData] = useState<any>(null);
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,6 +35,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ setSelectedStock }) => {
       const response = await axios.post<StockData>('http://localhost:5000/stock_information', formData);
       const stockData = response.data;
       setSelectedStock(stockData); // Update selected stock with API response
+
     } catch (error) {
       console.error('Error submitting form:', error);
     }

@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
 import yfinance as yf
 from flask_cors import CORS
-from models import db, connect_db, Stocks
+from models import db, connect_db, Stocks, TradeHistory
+import schedule
+import time
+from threading import Thread
+from yfinance import Ticker
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Allow all routes
@@ -13,6 +17,10 @@ app.config['SQLALCHEMY_ECHO'] = True
 with app.app_context():
     connect_db(app)
     db.create_all()
+    
+
+
+
 
 @app.route("/stock_information", methods=["POST"])
 def stock_information():
@@ -25,6 +33,8 @@ def stock_information():
     
     # Return a response
     return jsonify(info)
+
+
 
 @app.route("/track", methods=["POST"])
 def track():
@@ -116,6 +126,9 @@ def buy_stock():
             new_stock = Stocks(symbol=symbol, shortName=shortName, currentPrice=currentPrice, tracking=tracking, owned=False, shares=shares_to_add)
             db.session.add(new_stock)
 
+        new_trade = TradeHistory(symbol=symbol, shortName=shortName, shares=shares_to_add, price=currentPrice, action="buy")
+        print(new_trade)
+        db.session.add(new_trade)
         db.session.commit()
         return jsonify({"message": "Stock purchase successful"}), 200
     except Exception as e:
@@ -143,6 +156,9 @@ def sell():
         return jsonify({"error": "Stock not found or not owned"}), 400
     
     try:
+        new_trade = TradeHistory(symbol=symbol, shortName=stock.shortName, shares=shares_to_sell, price=stock.currentPrice, action="sell")
+        db.session.add(new_trade)
+        print(new_trade)
         db.session.commit()
         return jsonify({"message": message})
     except Exception as e:
@@ -159,6 +175,22 @@ def portfolio():
         "currentPrice": stock.currentPrice,
         "shortName": stock.shortName,
     } for stock in owned_stocks])
+    
+@app.route("/trade_history", methods=["GET"])
+def trade_history():
+    trades = TradeHistory.query.all()
+    return jsonify([{
+        "symbol": trade.symbol,
+        "shortName": trade.shortName,
+        "shares": trade.shares,
+        "price": trade.price,
+        "action": trade.action,
+        "timestamp": trade.timestamp
+    } for trade in trades])
+    
+
+
+    
 
 if __name__ == "__main__":
     app.run(debug=True)

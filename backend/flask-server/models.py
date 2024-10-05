@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -25,7 +26,7 @@ class TradeHistory(db.Model):
     shares = db.Column(db.Float, nullable=False)
     price = db.Column(db.Float, nullable=False)
     action = db.Column(db.String(10), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
     

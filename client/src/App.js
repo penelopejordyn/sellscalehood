@@ -12,7 +12,7 @@ function App() {
   return (
     <div className="h-screen flex flex-row bg-gray-100">
       {/* Left Sidebar */}
-      <div className="w-1/3 bg-white p-5">
+      <div className="w-1/3 bg-white p-5 pb-8 overflow-y-auto rounded-br-lg rounded-tr-lg scrollbar">
         <Sidebar setPortfolioValue={setPortfolioValue} setSelectedStock={setSelectedStock} />
       </div>
 
@@ -34,10 +34,15 @@ function App() {
           )}
         </div>
 
-        {/* Portfolio Summary & Transaction History */}
-        <div className="p-5 bg-gray-100 flex">
-          <PortfolioSummary portfolioValue={portfolioValue }/>
-          <TransactionHistory />
+        {/* Portfolio Summary */}
+        <div className="p-5">
+        <PortfolioSummary className="w-1/3" portfolioValue={portfolioValue }/>
+        </div>
+
+        {/*Transaction History */}
+        <div className="p-5 bg-gray-100 flex overflow-y-auto scrollbar">
+          <TransactionHistory className="w-2/3 overflow-y-auto scrollbar"/>
+          <div className="bg-white p-4 shadow-md rounded-lg w-1/3" >  </div>
         </div>
       </div>
     </div>

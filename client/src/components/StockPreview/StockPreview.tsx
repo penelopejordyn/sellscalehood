@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 interface Stock {
   symbol: string;
@@ -8,7 +8,9 @@ interface Stock {
   shares?: number; // Optional, used when displaying shares owned
 }
 
-function StockPreview({ stock, refreshPortfolio }: { stock: Stock, refreshPortfolio: () => void }) {
+
+
+function StockPreview({ setStock ,stock, refreshPortfolio }: { setStock: React.Dispatch<React.SetStateAction<Stock>>, stock: Stock, refreshPortfolio: () => void }) {
   const { symbol, shortName, currentPrice, shares } = stock;
 
 
@@ -17,6 +19,7 @@ function StockPreview({ stock, refreshPortfolio }: { stock: Stock, refreshPortfo
   const [isTracked, setIsTracked] = useState(false); // Track whether the stock is tracked
   const [buyAmount, setBuyAmount] = useState<number | null>(null); // Amount in dollars to buy
   const [sellAmount, setSellAmount] = useState<number | null>(null); // Number of shares to sell; // Total value of the portfolio
+
 
   // Check if the stock is already tracked in the database
   useEffect(() => {
@@ -105,11 +108,14 @@ function StockPreview({ stock, refreshPortfolio }: { stock: Stock, refreshPortfo
     return null; // Return early if stock doesn't exist
   }
 
+  
+
   return (
     <div className="bg-white shadow-lg rounded-xl p-5 backdrop-blur-md">
       <h2 className="text-2xl font-bold">{shortName} ({symbol})</h2>
-      <p>Price: ${currentPrice.toFixed(2)}</p>
+      <p>Current Price: ${currentPrice.toFixed(2)}</p>
       {isOwned && <p>Shares Owned: {shares.toFixed(4)}</p>}
+      <p>Market Value: ${(currentPrice * (shares || 0)).toFixed(2)}</p>
 
       <div className="mt-4 flex space-x-4">
         {/* Track/Untrack Section */}

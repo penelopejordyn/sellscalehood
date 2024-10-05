@@ -85,6 +85,11 @@ function Portfolio({ setPortfolioValue, setSelectedStock }) {
             <div>
               Price: ${stock.currentPrice !== null && stock.currentPrice !== undefined 
                 ? stock.currentPrice.toFixed(2) 
+                : 'N/A'} per share
+            </div>
+            <div>
+              Market Value: ${stock.currentPrice !== null && stock.currentPrice !== undefined 
+                ?(stock.shares * stock.currentPrice).toFixed(2) 
                 : 'N/A'}
             </div>
           </div>

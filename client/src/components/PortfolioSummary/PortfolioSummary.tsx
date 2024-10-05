@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function PortfolioSummary({portfolioValue}: {portfolioValue: number}) {
+function PortfolioSummary({portfolioValue}: {portfolioValue: number},) {
   
 
   function money_round(num) {
@@ -8,9 +8,9 @@ function PortfolioSummary({portfolioValue}: {portfolioValue: number}) {
 }
 
   return (
-    <div className="w-1/2 bg-white p-4 shadow-md rounded-lg">
-      <h3 className="text-lg font-semibold">Portfolio Value</h3>
-      <p>${money_round(portfolioValue)}</p>
+    <div className={` bg-white p-4 shadow-md rounded-lg`}>
+      <h3 className="text-lg text-center font-semibold">Portfolio Value</h3>
+      <p className="text-5xl text-center">${money_round(portfolioValue)}</p>
     </div>
   );
 }

@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Modern scrollbar styling for Firefox */
+.scrollbar {
+    scrollbar-width: thin; /* Makes the scrollbar thinner in Firefox */
+    scrollbar-color: #6b7280 #f3f4f6; /* Thumb and track colors for Firefox */
+  }
+  
+  /* WebKit-based browsers (Chrome, Safari, Edge) */
+  .scrollbar::-webkit-scrollbar {
+    width: 8px; /* Adjust scrollbar width */
+  }
+  
+  .scrollbar::-webkit-scrollbar-track {
+    background: #f3f4f6; /* Light gray track background */
+    border-radius: 10px; /* Optional, can be removed if you don’t want rounded track */
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb {
+    background-color: #6b7280; /* Dark gray thumb */
+    border-radius: 10px; /* Rounded corners for thumb */
+    border: 2px solid #f3f4f6; /* Padding around thumb (matches track background) */
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #4b5563; /* Darker gray on hover */
+  }
+  
+  /* Optional: More customization for Firefox */
+  .scrollbar::-moz-scrollbar-thumb {
+    border-radius: 10px; /* Rounded corners for thumb in Firefox */
+  }
+  
