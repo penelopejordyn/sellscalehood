@@ -42,7 +42,9 @@ function App() {
         {/*Transaction History */}
         <div className="p-5 bg-gray-100 flex overflow-y-auto scrollbar">
           <TransactionHistory className="w-2/3 overflow-y-auto scrollbar"/>
-          <div className="bg-white p-4 shadow-md rounded-lg w-1/3" >  </div>
+          <div className="bg-white p-4 shadow-md rounded-lg w-1/3" >
+          <h1 className="text-5xl font-semibold">Wellcome to sellscalehood</h1>
+           </div>
         </div>
       </div>
     </div>
